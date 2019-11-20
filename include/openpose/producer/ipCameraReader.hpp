@@ -1,6 +1,8 @@
 #ifndef OPENPOSE_PRODUCER_IP_CAMERA_READER_HPP
 #define OPENPOSE_PRODUCER_IP_CAMERA_READER_HPP
 
+#include <atomic>
+#include <mutex>
 #include <openpose/core/common.hpp>
 #include <openpose/producer/videoCaptureReader.hpp>
 
@@ -41,9 +43,17 @@ namespace op
     private:
         const std::string mPathName;
 
+	bool mThreadOpened;
+        Matrix mBuffer;
+        std::mutex mBufferMutex;
+        std::atomic<bool> mCloseThread;
+	std::thread mThread;
+
         Matrix getRawFrame();
 
         std::vector<Matrix> getRawFrames();
+
+	void bufferingThread();
 
         DELETE_COPY(IpCameraReader);
     };
